@@ -1,6 +1,9 @@
 module Parser where
 
+import Data.Char (isSpace)
 import Control.Applicative
+
+import Command
 
 newtype Parser a = Parser { runParser :: String -> Maybe (String, a) }
 
@@ -40,3 +43,53 @@ charParser ch = Parser f
 
 stringParser :: String -> Parser String
 stringParser = sequenceA . map charParser
+
+spanParser :: (Char -> Bool) -> Parser String
+spanParser f = Parser f'
+    where
+        f' input =
+            let (token, rest) = span f input
+            in Just (rest, token)
+
+ws :: Parser String
+ws = spanParser isSpace
+
+-- validateParser :: Parser [a] -> Parser [a]
+-- validateParser (Parser p) = Parser f
+--     where
+--         f input = do
+--             (input', xs) <- p input
+--             if null xs
+--                 then Nothing
+--                 else Just (input', xs)
+
+pwdParser :: Parser Command
+pwdParser = (\_ -> PWDCommand) <$> stringParser "pwd"
+
+cdParser :: Parser Command
+cdParser = (\_ -> CDCommand) <$> stringParser "cd"
+
+lsParser :: Parser Command
+lsParser = (\_ -> LSCommand) <$> stringParser "ls"
+
+catParser :: Parser Command
+catParser = (\_ -> CATCommand) <$> stringParser "cat"
+
+dirParser :: Parser Command
+dirParser = f <$> (stringParser "mkdir" <|> stringParser "touch")
+    where
+        f "mkdir" = DIRCommand MKDIR
+        f "touch" = DIRCommand TOUCH
+        f _ = undefined
+
+rmParser :: Parser Command
+rmParser = (\_ -> RMCommand) <$> stringParser "rm"
+
+quitParser :: Parser Command
+quitParser = (\_ -> QUITCommand) <$> stringParser ":q"
+
+cmdParser :: Parser Command
+cmdParser = pwdParser <|> cdParser <|> lsParser <|> catParser <|> dirParser <|> rmParser <|> quitParser
+
+parseCommand :: String -> Maybe (String, Command)
+parseCommand = runParser $ cmdParser <* ws
