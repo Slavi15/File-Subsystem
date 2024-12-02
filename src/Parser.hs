@@ -54,14 +54,12 @@ spanParser f = Parser f'
 ws :: Parser String
 ws = spanParser isSpace
 
--- validateParser :: Parser [a] -> Parser [a]
--- validateParser (Parser p) = Parser f
---     where
---         f input = do
---             (input', xs) <- p input
---             if null xs
---                 then Nothing
---                 else Just (input', xs)
+slashParser :: Parser String
+slashParser = charParser '/' *> spanParser (/= '/')
+
+getNextDirectory :: String -> Maybe (String, String)
+getNextDirectory "" = Just ("", "")
+getNextDirectory path = runParser slashParser path
 
 pwdParser :: Parser Command
 pwdParser = (\_ -> PWDCommand) <$> stringParser "pwd"
@@ -78,8 +76,8 @@ catParser = (\_ -> CATCommand) <$> stringParser "cat"
 dirParser :: Parser Command
 dirParser = f <$> (stringParser "mkdir" <|> stringParser "touch")
     where
-        f "mkdir" = DIRCommand MKDIR
-        f "touch" = DIRCommand TOUCH
+        f "mkdir" = DIRCommand MkDir
+        f "touch" = DIRCommand Touch
         f _ = undefined
 
 rmParser :: Parser Command

@@ -1,6 +1,6 @@
 module Command where
 
-data MKCommands = MKDIR | TOUCH
+data MKCommands = MkDir | Touch
     deriving (Eq, Show)
 
 data Command = PWDCommand 
