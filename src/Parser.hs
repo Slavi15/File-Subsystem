@@ -12,22 +12,27 @@ instance Functor Parser where
         where
             f' input = do
                 (input', x) <- p input
-                Just (input', f $ x)
+                Just (input', f x)
 
 instance Applicative Parser where
+    pure :: a -> Parser a
     pure x = Parser f
-        where 
+        where
             f input = Just (input, x)
 
+    (<*>) :: Parser (a -> b) -> Parser a -> Parser b
     (Parser p1) <*> (Parser p2) = Parser f
-        where 
+        where
             f input = do
                 (input', f') <- p1 input
                 (input'', a) <- p2 input'
-                Just (input'', f' $ a)
+                Just (input'', f' a)
 
 instance Alternative Parser where
-    empty = Parser $ \_ -> Nothing
+    empty :: Parser a
+    empty = Parser $ const Nothing
+
+    (<|>) :: Parser a -> Parser a -> Parser a
     (Parser p1) <|> (Parser p2) = Parser f
         where
             f input = p1 input <|> p2 input
@@ -42,7 +47,7 @@ charParser ch = Parser f
         f [] = Nothing
 
 stringParser :: String -> Parser String
-stringParser = sequenceA . map charParser
+stringParser = traverse charParser
 
 spanParser :: (Char -> Bool) -> Parser String
 spanParser f = Parser f'
@@ -62,16 +67,16 @@ getNextDirectory "" = Just ("", "")
 getNextDirectory path = runParser slashParser path
 
 pwdParser :: Parser Command
-pwdParser = (\_ -> PWDCommand) <$> stringParser "pwd"
+pwdParser = PWDCommand <$ stringParser "pwd"
 
 cdParser :: Parser Command
-cdParser = (\_ -> CDCommand) <$> stringParser "cd"
+cdParser = CDCommand <$ stringParser "cd"
 
 lsParser :: Parser Command
-lsParser = (\_ -> LSCommand) <$> stringParser "ls"
+lsParser = LSCommand <$ stringParser "ls"
 
 catParser :: Parser Command
-catParser = (\_ -> CATCommand) <$> stringParser "cat"
+catParser = CATCommand <$ stringParser "cat"
 
 dirParser :: Parser Command
 dirParser = f <$> (stringParser "mkdir" <|> stringParser "touch")
@@ -81,10 +86,10 @@ dirParser = f <$> (stringParser "mkdir" <|> stringParser "touch")
         f _ = undefined
 
 rmParser :: Parser Command
-rmParser = (\_ -> RMCommand) <$> stringParser "rm"
+rmParser = RMCommand <$ stringParser "rm"
 
 quitParser :: Parser Command
-quitParser = (\_ -> QUITCommand) <$> stringParser ":q"
+quitParser = QUITCommand <$ stringParser ":q"
 
 cmdParser :: Parser Command
 cmdParser = pwdParser <|> cdParser <|> lsParser <|> catParser <|> dirParser <|> rmParser <|> quitParser
