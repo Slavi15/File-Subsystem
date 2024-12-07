@@ -1,13 +1,14 @@
 module Parser where
 
 import Data.Char (isSpace)
-import Control.Applicative
+import Control.Applicative ( Alternative((<|>), empty) )
 
-import Command
+import Command ( Command(..), MKCommands(Touch, MkDir) )
 
 newtype Parser a = Parser { runParser :: String -> Maybe (String, a) }
 
 instance Functor Parser where
+    fmap :: (a -> b) -> Parser a -> Parser b
     fmap f (Parser p) = Parser f'
         where
             f' input = do
