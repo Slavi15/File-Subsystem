@@ -1,9 +1,9 @@
 module Add where
 
-import FileSystem ( FileSystem(..) )
+import Data.FileSystem ( FileSystem(..) )
 
 import Parser (wordParser, getNextDirectory, eofParser)
-import Helpers (isPath)
+import Utility (isPath)
 
 mk :: String -> [FileSystem] -> Maybe FileSystem -> Maybe FileSystem
 mk "" toBeAdded (Just (MkDirectory name contents)) =
@@ -30,8 +30,7 @@ mkFile input fs = case wordParser input of
         parseFiles input = case wordParser input of
             Just (rest, name) ->
                 case eofParser rest of
-                    Just (rest', content) ->
-                        MkFile name content : parseFiles rest'
+                    Just (rest', content) -> MkFile name content : parseFiles rest'
                     Nothing -> []
 
 mkDirectory :: String -> Maybe FileSystem -> Maybe FileSystem
