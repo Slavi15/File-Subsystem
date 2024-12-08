@@ -9,7 +9,7 @@ import Add (mkFile, mkDirectory)
 import Parser (parseCommand)
 import Printer (printFile, printDirectory)
 
-eval :: String -> [FileSystem] -> Maybe [FileSystem]
+eval :: String -> Maybe FileSystem -> Maybe FileSystem
 eval input fs =
     case parseCommand input of
         Nothing -> Nothing
@@ -18,27 +18,25 @@ eval input fs =
                 PWDCommand -> undefined
                 CDCommand -> undefined
                 CATCommand -> undefined
-                DIRCommand command ->
-                    case command of
-                        Touch -> Just $ maybeToList (mkFile rest (listToMaybe fs))
-                        MkDir -> Just $ maybeToList (mkDirectory rest (listToMaybe fs))
+                DIRCommand Touch -> mkFile rest fs
+                DIRCommand MkDir -> mkDirectory rest fs
                 RMCommand -> undefined
                 QUITCommand -> undefined
                 _ -> Nothing
 
-repl :: [FileSystem] -> IO ()
+repl :: Maybe FileSystem -> IO ()
 repl fs = do
-    putStr $ printDirectory fs ++ "> "
+    putStr $ printDirectory (maybeToList fs) ++ "> "
     input <- getLine
     case eval input fs of
         Nothing -> repl fs
-        (Just fs') -> repl fs'
+        (Just fs') -> repl (Just fs')
 
 main :: IO ()
-main = repl [fileSystem]
+main = repl fileSystem
 
-fileSystem :: FileSystem
-fileSystem = MkDirectory "/" [MkDirectory "test" []]
+fileSystem :: Maybe FileSystem
+fileSystem = Just (MkDirectory "/" [])
 
--- >>> mkFile "/test file1 hello file1$ file2 hello file2$" (Just fileSystem)
--- Just (MkDirectory "/" [MkDirectory "test" [MkFile "file1" "hello file1",MkFile "file2" "hello file2"]])
+-- >>> mkFile "file1 hello file1$ file2 hello file2$" fileSystem
+-- Just (MkDirectory "/" [MkFile "file1" "hello file1",MkFile "file2" "hello file2"])
