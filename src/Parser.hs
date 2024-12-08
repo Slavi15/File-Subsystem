@@ -1,9 +1,8 @@
 module Parser where
 
+import Command (Command (..), MKCommands (MkDir, Touch))
+import Control.Applicative (Alternative (empty, (<|>)))
 import Data.Char (isSpace)
-import Control.Applicative ( Alternative((<|>), empty) )
-
-import Command ( Command(..), MKCommands(Touch, MkDir) )
 
 newtype Parser a = Parser { runParser :: String -> Maybe (String, a) }
 
@@ -61,7 +60,13 @@ ws :: Parser String
 ws = spanParser isSpace
 
 slashParser :: Parser String
-slashParser = charParser '/' *> spanParser (/= '/')
+slashParser = charParser '/' *> spanParser (/= '/') <* ws
+
+wordParser :: String -> Maybe (String, String)
+wordParser = runParser $ spanParser (/= ' ') <* ws
+
+eofParser :: String -> Maybe (String, String)
+eofParser = runParser $ spanParser (/= '$') <* charParser '$' <* ws
 
 getNextDirectory :: String -> Maybe (String, String)
 getNextDirectory "" = Just ("", "")
@@ -97,3 +102,12 @@ cmdParser = pwdParser <|> cdParser <|> lsParser <|> catParser <|> dirParser <|> 
 
 parseCommand :: String -> Maybe (String, Command)
 parseCommand = runParser $ cmdParser <* ws
+
+-- >>> runParser slashParser "/test/test1/test2"
+-- Just ("/test1/test2","test")
+
+-- >>> wordParser "/test/test1/test2 Test Content"
+-- Just ("Test Content","/test/test1/test2")
+
+-- >>> getNextDirectory "/test/test1/test2"
+-- Just ("/test1/test2","test")
