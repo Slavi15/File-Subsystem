@@ -1,6 +1,6 @@
 module Parser where
 
-import Command (Command (..), MKCommands (MkDir, Touch))
+import Data.Command (Command (..), MKCommands (Touch, MkDir), RMCommands (RM, RmDir))
 import Control.Applicative (Alternative (empty, (<|>)))
 import Data.Char (isSpace)
 
@@ -66,7 +66,7 @@ wordParser :: String -> Maybe (String, String)
 wordParser = runParser $ spanParser (/= ' ') <* ws
 
 eofParser :: String -> Maybe (String, String)
-eofParser = runParser $ spanParser (/= '$') <* charParser '$' <* ws
+eofParser = runParser $ spanParser (/= '~') <* charParser '~' <* ws
 
 getNextDirectory :: String -> Maybe (String, String)
 getNextDirectory "" = Just ("", "")
@@ -92,7 +92,11 @@ dirParser = f <$> (stringParser "mkdir" <|> stringParser "touch")
         f _ = undefined
 
 rmParser :: Parser Command
-rmParser = RMCommand <$ stringParser "rm"
+rmParser = f <$> (stringParser "rm" <|> stringParser "rmdir")
+    where
+        f "rm" = RMCommand RM
+        f "rmdir" = RMCommand RmDir
+        f _ = undefined
 
 quitParser :: Parser Command
 quitParser = QUITCommand <$ stringParser ":q"
