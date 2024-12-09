@@ -1,6 +1,6 @@
 module Add where
 
-import Data.FileSystem ( FileSystem(..) )
+import Core.FileSystem ( FileSystem(..) )
 
 import Parser (wordParser, getNextDirectory, eofParser)
 import Utility (isPath)
