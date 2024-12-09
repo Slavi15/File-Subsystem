@@ -1,15 +1,16 @@
 module Remove where
 
-import Data.FileSystem ( FileSystem(..) )
+import Core.FileSystem ( FileSystem(..) )
 
 import Utility (getName)
+import Data.Maybe (listToMaybe)
 
 rm :: [FileSystem] -> Maybe FileSystem -> Maybe FileSystem
 rm toBeRemoved (Just (MkDirectory name contents)) =
-    Just $ MkDirectory name (filter (\entry -> getName entry `notElem` removeNames) contents)
+    Just $ MkDirectory name (filter (\entry -> getName (Just entry) `notElem` removeNames) contents)
     where
         removeNames :: [String]
-        removeNames = map getName toBeRemoved
+        removeNames = [getName (listToMaybe toBeRemoved)]
 rm _ fs = fs
 
 rmFile :: String -> Maybe FileSystem -> Maybe FileSystem

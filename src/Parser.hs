@@ -1,6 +1,7 @@
 module Parser where
 
-import Data.Command (Command (..), MKCommands (Touch, MkDir), RMCommands (RM, RmDir))
+import Core.Command (Command (..), MKCommands (Touch, MkDir), RMCommands (RM, RmDir))
+
 import Control.Applicative (Alternative (empty, (<|>)))
 import Data.Char (isSpace)
 
@@ -115,3 +116,12 @@ parseCommand = runParser $ cmdParser <* ws
 
 -- >>> getNextDirectory "/test/test1/test2"
 -- Just ("/test1/test2","test")
+
+-- >>> getNextDirectory ""
+-- Just ("","")
+
+-- >>> wordParser "cd .."
+-- Just ("..","cd")
+
+-- >>> parseCommand "cd .."
+-- Just ("..",CDCommand)

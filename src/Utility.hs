@@ -1,6 +1,6 @@
 module Utility where
 
-import Data.FileSystem ( FileSystem(..) )
+import Core.FileSystem ( FileSystem(..) )
 
 isPath :: String -> Bool
 isPath = foldr (\ x -> (||) (x == '/')) False
@@ -13,6 +13,6 @@ isDirectory :: FileSystem -> Bool
 isDirectory (MkDirectory _ _) = True
 isDirectory _ = False
 
-getName :: FileSystem -> String
-getName (MkFile name _) = name
-getName (MkDirectory name _) = name
+getName :: Maybe FileSystem -> String
+getName (Just (MkDirectory name _)) = name
+getName (Just (MkFile name _)) = name
