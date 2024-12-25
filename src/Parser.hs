@@ -67,7 +67,7 @@ wordParser :: String -> Maybe (String, String)
 wordParser = runParser $ spanParser (/= ' ') <* ws
 
 eofParser :: String -> Maybe (String, String)
-eofParser = runParser $ spanParser (/= '~') <* charParser '~' <* ws
+eofParser = runParser $ spanParser (/= '$') <* charParser '$' <* ws
 
 getNextDirectory :: String -> Maybe (String, String)
 getNextDirectory "" = Just ("", "")
@@ -99,11 +99,14 @@ rmParser = f <$> (stringParser "rm" <|> stringParser "rmdir")
         f "rmdir" = RMCommand RmDir
         f _ = undefined
 
+showParser :: Parser Command
+showParser = SHOWCommand <$ stringParser "show"
+
 quitParser :: Parser Command
 quitParser = QUITCommand <$ stringParser ":q"
 
 cmdParser :: Parser Command
-cmdParser = pwdParser <|> cdParser <|> lsParser <|> catParser <|> dirParser <|> rmParser <|> quitParser
+cmdParser = pwdParser <|> cdParser <|> lsParser <|> catParser <|> dirParser <|> rmParser <|> showParser <|> quitParser
 
 parseCommand :: String -> Maybe (String, Command)
 parseCommand = runParser $ cmdParser <* ws

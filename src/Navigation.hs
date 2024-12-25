@@ -3,22 +3,19 @@ module Navigation where
 
 import Core.FileSystem ( FileSystem(..) )
 
-import Data.Maybe (maybeToList, listToMaybe)
+import Data.Maybe (maybeToList)
 import Data.List (find)
 
 import Parser (getNextDirectory)
 import Output (printDirectory, printEntity, printCDCommand)
 import Utility (getName)
 
-pwd :: Maybe FileSystem -> Maybe FileSystem -> String
-pwd fs = pwdHelper (getName fs)
+pwd :: [FileSystem] -> String
+pwd = printDirectory
 
-pwdHelper :: String -> Maybe FileSystem -> String
-pwdHelper name fs = printDirectory name (maybeToList fs)
-
-cd :: String -> [FileSystem] -> Maybe FileSystem
+cd :: String -> [FileSystem] -> Maybe [FileSystem]
 cd input fs = case getNextDirectory input of
-    Just ("", "") -> listToMaybe fs
+    Just ("", "") -> Just fs
     Just (rest, "..") ->
         case goToParentDirectory fs of
             (Just parentDirectory) -> cd rest parentDirectory
@@ -31,7 +28,7 @@ cd input fs = case getNextDirectory input of
 
 ls :: String -> Maybe FileSystem -> String
 ls input fs = case cd input (maybeToList fs) of
-    (Just (MkDirectory _ contents)) -> concatMap printEntity contents
+    Just ((MkDirectory _ contents) : _) -> concatMap printEntity contents
     Nothing -> "Invalid directory!\n"
 
 goToParentDirectory :: [FileSystem] -> Maybe [FileSystem]
@@ -39,7 +36,7 @@ goToParentDirectory (_ : fs) = Just fs
 goToParentDirectory [] = Nothing
 
 goToSubDirectory :: String -> [FileSystem] -> Maybe FileSystem
-goToSubDirectory name (MkDirectory _ contents : _) = 
+goToSubDirectory name (MkDirectory _ contents : _) =
     find (\case
         MkDirectory directoryName _ -> name == directoryName
         _ -> False) contents

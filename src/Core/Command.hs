@@ -12,5 +12,6 @@ data Command = PWDCommand
     | DIRCommand MKCommands
     | CATCommand 
     | RMCommand RMCommands
+    | SHOWCommand
     | QUITCommand
     deriving (Eq, Show)
