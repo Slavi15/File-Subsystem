@@ -7,8 +7,7 @@ import Data.Maybe (maybeToList)
 import Data.List (find)
 
 import Parser (getNextDirectory)
-import Output (printDirectory, printEntity, printCDCommand)
-import Utility (getName)
+import Output (printDirectory, printEntity)
 
 pwd :: [FileSystem] -> String
 pwd = printDirectory

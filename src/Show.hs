@@ -9,6 +9,6 @@ import Utility (getName)
 
 showFile :: String -> Maybe FileSystem -> String 
 showFile name (Just (MkDirectory _ contents)) = 
-    case find (\entry -> getName (Just entry) == name) contents of
+    case find (\entry -> getName entry == name) contents of
         (Just result) -> printFile result
         Nothing -> "File does not exist!\n"

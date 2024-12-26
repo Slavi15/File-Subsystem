@@ -13,6 +13,6 @@ isDirectory :: FileSystem -> Bool
 isDirectory (MkDirectory _ _) = True
 isDirectory _ = False
 
-getName :: Maybe FileSystem -> String
-getName (Just (MkDirectory name _)) = name
-getName (Just (MkFile name _)) = name
+getName :: FileSystem -> String
+getName (MkDirectory name _) = name
+getName (MkFile name _) = name

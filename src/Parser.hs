@@ -86,10 +86,10 @@ catParser :: Parser Command
 catParser = CATCommand <$ stringParser "cat"
 
 dirParser :: Parser Command
-dirParser = f <$> (stringParser "mkdir" <|> stringParser "touch")
+dirParser = f <$> (stringParser "touch" <|> stringParser "mkdir")
     where
-        f "mkdir" = DIRCommand MkDir
         f "touch" = DIRCommand Touch
+        f "mkdir" = DIRCommand MkDir
         f _ = undefined
 
 rmParser :: Parser Command

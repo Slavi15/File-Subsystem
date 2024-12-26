@@ -11,9 +11,6 @@ printFile (MkFile name content) = "File: " ++ name ++ "\nContent: \n" ++ content
 printFile _ = ""
 
 printDirectory :: [FileSystem] -> String
-printDirectory [] = ""
 printDirectory ((MkDirectory "/" _) : fs) = "/" ++ printDirectory fs
 printDirectory ((MkDirectory n _) : fs) = "/" ++ reverse n ++ printDirectory fs
-
-printCDCommand :: FileSystem -> String
-printCDCommand (MkDirectory _ contents) = concatMap printEntity contents
+printDirectory _ = ""

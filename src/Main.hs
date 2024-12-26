@@ -72,20 +72,17 @@ fileSystem =
         MkFile "haskell2" ""
     ]
 
--- >>> mkFile "file1 hello file1$ file2 hello file2$" fileSystem
--- Just (MkDirectory "/" [MkDirectory "scheme" [MkDirectory "test" [MkFile "haskell1" "hask1",MkFile "haskell2" "hask2",MkFile "haskell3" "hask3"]],MkDirectory "scheme2" [],MkFile "haskell" "",MkFile "haskell2" "",MkFile "file1" "hello file1",MkFile "file2" "hello file2",MkFile "" ""])
+-- >>> mkFile "file1 hello file1$ file2 hello file2$" [fileSystem]
+-- Just [MkDirectory "/" [MkDirectory "scheme" [MkDirectory "test" [MkFile "haskell1" "hask1",MkFile "haskell2" "hask2",MkFile "haskell3" "hask3"]],MkDirectory "scheme2" [],MkFile "haskell" "",MkFile "haskell2" "",MkFile "file1" "hello file1",MkFile "file2" "hello file2"]]
 
--- >>> mkDirectory "dir1 dir2 dir3" fileSystem
--- Just (MkDirectory "/" [MkFile "file" "content",MkDirectory "dir1" [],MkDirectory "dir2" [],MkDirectory "dir3" []])
+-- >>> rmDirectory "scheme2" [fileSystem]
+-- Just [MkDirectory "/" [MkDirectory "scheme" [MkDirectory "test" [MkFile "haskell1" "hask1",MkFile "haskell2" "hask2",MkFile "haskell3" "hask3"]],MkFile "haskell" "",MkFile "haskell2" ""]]
 
--- >>> rmFile "file file2" fileSystem
--- Just (MkDirectory "/" [MkDirectory "dir" []])
+-- >>> rmFile "file file2" [fileSystem]
+-- Just [MkDirectory "/" [MkDirectory "scheme" [MkDirectory "test" [MkFile "haskell1" "hask1",MkFile "haskell2" "hask2",MkFile "haskell3" "hask3"]],MkDirectory "scheme2" [],MkFile "haskell" "",MkFile "haskell2" ""]]
 
--- >>> rmDirectory "dir" fileSystem
--- Just (MkDirectory "/" [MkFile "file" "content",MkFile "file2" "content2"])
+-- >>> rmDirectory "dir" [fileSystem]
+-- Just [MkDirectory "/" [MkDirectory "scheme" [MkDirectory "test" [MkFile "haskell1" "hask1",MkFile "haskell2" "hask2",MkFile "haskell3" "hask3"]],MkDirectory "scheme2" [],MkFile "haskell" "",MkFile "haskell2" ""]]
 
--- >>> ls "" (cd "/.." [(MkDirectory "/" [MkDirectory "scheme" []])])
--- "Invalid directory!\n"
-
--- >>> ls "" fileSystem
--- "Directory: scheme\nFile: haskell\n"
+-- >>> ls "" (Just fileSystem)
+-- "Directory: scheme\nDirectory: scheme2\nFile: haskell\nFile: haskell2\n"
