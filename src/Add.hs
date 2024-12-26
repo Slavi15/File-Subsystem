@@ -7,14 +7,14 @@ import Utility (isPath)
 
 mk :: String -> [FileSystem] -> [FileSystem] -> Maybe [FileSystem]
 mk "" toBeAdded ((MkDirectory name contents) : fs) =
-    Just [MkDirectory name (contents ++ toBeAdded)]
+    Just (MkDirectory name (contents ++ toBeAdded) : fs)
 mk path toBeAdded ((MkDirectory name contents) : fs) =
     case getNextDirectory path of
         Just (rest, curr) ->
             case updateContent curr rest toBeAdded contents of
-                (Just updatedContents) -> Just [MkDirectory name updatedContents]
+                (Just updatedContents) -> Just (MkDirectory name updatedContents : fs)
                 Nothing -> Nothing
-        Nothing -> Just [MkDirectory name contents]
+        Nothing -> Nothing
 mk _ _ fs = Just fs
 
 mkFile :: String -> [FileSystem] -> Maybe [FileSystem]
@@ -31,7 +31,7 @@ mkFile input fs = case wordParser input of
             Just (rest, name) ->
                 case eofParser rest of
                     Just (rest', content) -> MkFile name content : parseFiles rest'
-                    Nothing -> [MkFile name ""]
+                    Nothing -> []
 
 mkDirectory :: String -> [FileSystem] -> Maybe [FileSystem]
 mkDirectory input fs = case wordParser input of
