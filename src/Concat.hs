@@ -1,4 +1,4 @@
-module Cat where
+module Concat where
 
 import Control.Applicative (Alternative ((<|>)))
 import Core.FileSystem ( FileSystem(..) )

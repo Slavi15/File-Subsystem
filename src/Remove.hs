@@ -2,22 +2,15 @@ module Remove where
 
 import Core.FileSystem ( FileSystem(..) )
 
-import Utility (getName)
+import Utility (getName, isFile)
 
-rm :: [FileSystem] -> [FileSystem] -> Maybe [FileSystem]
-rm (toRemove : toBeRemoved) ((MkDirectory name contents) : fs) =
-    case filter (\entry -> getName entry /= getName toRemove) contents of
-        updatedDirectory -> rm toBeRemoved (MkDirectory name updatedDirectory : fs)
-rm _ fs = Just fs
-
-rmFile :: String -> [FileSystem] -> Maybe [FileSystem]
-rmFile input = rm files
+rm :: (FileSystem -> Bool) -> [String] -> [FileSystem] -> Maybe [FileSystem]
+rm predicate (toRemove : toBeRemoved) ((MkDirectory name contents) : fs) =
+    rm predicate toBeRemoved (MkDirectory name updatedContents : fs)
     where
-        files :: [FileSystem]
-        files = map (`MkFile` "") (words input)
+        updatedContents :: [FileSystem]
+        updatedContents = filter (\entry -> getName entry /= toRemove || not (predicate entry)) contents
+rm _ _ fs = Just fs
 
-rmDirectory :: String -> [FileSystem] -> Maybe [FileSystem]
-rmDirectory input = rm dirs
-    where
-        dirs :: [FileSystem]
-        dirs = map (`MkDirectory` []) (words input)
+rmFiles :: String -> [FileSystem] -> Maybe [FileSystem]
+rmFiles input = rm isFile (words input)

@@ -1,20 +1,15 @@
 module Main where
 
-import Data.Maybe (listToMaybe)
-import Data.List (find)
-
 import Core.FileSystem ( FileSystem(..) )
-import Core.Command ( Command(..), MKCommands(Touch, MkDir), RMCommands (RM, RmDir) )
+import Core.Command ( Command(..), MKCommands(Touch, MkDir) )
 import Core.Eval ( Eval(..) )
 
 import Add (mkFile, mkDirectory)
 import Navigation (pwd, cd, ls)
-import Cat (cat)
-import Remove (rmFile, rmDirectory)
+import Concat (cat)
+import Remove (rmFiles)
 import Parser (parseCommand, wordParser)
 import Show (showFile)
-import Output (printDirectory, printFile)
-import Utility (getName)
 
 eval :: String -> [FileSystem] -> Eval
 eval input fs =
@@ -28,14 +23,13 @@ eval input fs =
                 CATCommand -> Continue $ cat rest fs
                 DIRCommand Touch -> Continue $ mkFile rest fs
                 DIRCommand MkDir -> Continue $ mkDirectory rest fs
-                RMCommand RM -> Continue $ rmFile rest fs
-                RMCommand RmDir -> Continue $ rmDirectory rest fs
+                RMCommand -> Continue $ rmFiles rest fs
                 SHOWCommand -> SHOW rest
                 QUITCommand -> QUIT
 
 repl :: [FileSystem] -> IO ()
 repl fs = do
-    putStr $ reverse (pwd fs) ++ "> "
+    putStr $ pwd fs ++ "> "
     input <- getLine
     case eval input fs of
         Continue Nothing -> repl fs
@@ -44,10 +38,10 @@ repl fs = do
                 putStrLn $ pwd fs ++ "\n"
                 repl fs
         LS path -> do
-                putStrLn $ ls path (listToMaybe fs)
+                putStrLn $ ls path fs
                 repl fs
         SHOW fileName -> do
-                putStrLn $ showFile fileName (listToMaybe fs)
+                putStrLn $ showFile fileName fs
                 repl fs
         QUIT -> putStrLn "Exit ..."
 
@@ -55,34 +49,21 @@ main :: IO ()
 main = repl [fileSystem]
 
 fileSystem :: FileSystem
-fileSystem =
-    MkDirectory "/"
-    [
-        MkDirectory "scheme"
-        [
-            MkDirectory "test"
-            [
-                MkFile "haskell1" "hask1",
-                MkFile "haskell2" "hask2",
-                MkFile "haskell3" "hask3"
-            ]
-        ],
-        MkDirectory "scheme2" [],
-        MkFile "haskell" "",
-        MkFile "haskell2" ""
-    ]
+fileSystem = MkDirectory "/" []
 
--- >>> mkFile "file1 hello file1$ file2 hello file2$" [fileSystem]
--- Just [MkDirectory "/" [MkDirectory "scheme" [MkDirectory "test" [MkFile "haskell1" "hask1",MkFile "haskell2" "hask2",MkFile "haskell3" "hask3"]],MkDirectory "scheme2" [],MkFile "haskell" "",MkFile "haskell2" "",MkFile "file1" "hello file1",MkFile "file2" "hello file2"]]
-
--- >>> rmDirectory "scheme2" [fileSystem]
--- Just [MkDirectory "/" [MkDirectory "scheme" [MkDirectory "test" [MkFile "haskell1" "hask1",MkFile "haskell2" "hask2",MkFile "haskell3" "hask3"]],MkFile "haskell" "",MkFile "haskell2" ""]]
-
--- >>> rmFile "file file2" [fileSystem]
--- Just [MkDirectory "/" [MkDirectory "scheme" [MkDirectory "test" [MkFile "haskell1" "hask1",MkFile "haskell2" "hask2",MkFile "haskell3" "hask3"]],MkDirectory "scheme2" [],MkFile "haskell" "",MkFile "haskell2" ""]]
-
--- >>> rmDirectory "dir" [fileSystem]
--- Just [MkDirectory "/" [MkDirectory "scheme" [MkDirectory "test" [MkFile "haskell1" "hask1",MkFile "haskell2" "hask2",MkFile "haskell3" "hask3"]],MkDirectory "scheme2" [],MkFile "haskell" "",MkFile "haskell2" ""]]
-
--- >>> ls "" (Just fileSystem)
--- "Directory: scheme\nDirectory: scheme2\nFile: haskell\nFile: haskell2\n"
+-- fileSystem =
+--     MkDirectory "/"
+--     [
+--         MkDirectory "scheme"
+--         [
+--             MkDirectory "test"
+--             [
+--                 MkFile "haskell1" "hask1",
+--                 MkFile "haskell2" "hask2",
+--                 MkFile "haskell3" "hask3"
+--             ]
+--         ],
+--         MkDirectory "scheme2" [],
+--         MkFile "haskell" "",
+--         MkFile "haskell2" ""
+--     ]

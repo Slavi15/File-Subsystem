@@ -1,6 +1,6 @@
 module Parser where
 
-import Core.Command (Command (..), MKCommands (Touch, MkDir), RMCommands (RM, RmDir))
+import Core.Command (Command (..), MKCommands (Touch, MkDir))
 
 import Control.Applicative (Alternative (empty, (<|>)))
 import Data.Char (isSpace)
@@ -93,11 +93,7 @@ dirParser = f <$> (stringParser "touch" <|> stringParser "mkdir")
         f _ = undefined
 
 rmParser :: Parser Command
-rmParser = f <$> (stringParser "rm" <|> stringParser "rmdir")
-    where
-        f "rm" = RMCommand RM
-        f "rmdir" = RMCommand RmDir
-        f _ = undefined
+rmParser = RMCommand <$ stringParser "rm"
 
 showParser :: Parser Command
 showParser = SHOWCommand <$ stringParser "show"
@@ -110,21 +106,3 @@ cmdParser = pwdParser <|> cdParser <|> lsParser <|> catParser <|> dirParser <|> 
 
 parseCommand :: String -> Maybe (String, Command)
 parseCommand = runParser $ cmdParser <* ws
-
--- >>> runParser slashParser "/test/test1/test2"
--- Just ("/test1/test2","test")
-
--- >>> wordParser "/test/test1/test2 Test Content"
--- Just ("Test Content","/test/test1/test2")
-
--- >>> getNextDirectory "/test/test1/test2"
--- Just ("/test1/test2","test")
-
--- >>> getNextDirectory ""
--- Just ("","")
-
--- >>> wordParser "cd .."
--- Just ("..","cd")
-
--- >>> parseCommand "cd .."
--- Just ("..",CDCommand)

@@ -10,7 +10,7 @@ import Parser (getNextDirectory)
 import Output (printDirectory, printEntity)
 
 pwd :: [FileSystem] -> String
-pwd = printDirectory
+pwd fs = reverse $ printDirectory fs
 
 cd :: String -> [FileSystem] -> Maybe [FileSystem]
 cd input fs = case getNextDirectory input of
@@ -25,13 +25,15 @@ cd input fs = case getNextDirectory input of
             Nothing -> Nothing
     Nothing -> Nothing
 
-ls :: String -> Maybe FileSystem -> String
-ls input fs = case cd input (maybeToList fs) of
+ls :: String -> [FileSystem] -> String
+ls input fs = case cd input fs of
     Just ((MkDirectory _ contents) : _) -> concatMap printEntity contents
     Nothing -> "Invalid directory!\n"
 
 goToParentDirectory :: [FileSystem] -> Maybe [FileSystem]
-goToParentDirectory (_ : fs) = Just fs
+goToParentDirectory ((MkDirectory name _) : fs)
+    | name == "/" = Nothing
+    | otherwise = Just fs
 goToParentDirectory [] = Nothing
 
 goToSubDirectory :: String -> [FileSystem] -> Maybe FileSystem

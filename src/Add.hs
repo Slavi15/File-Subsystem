@@ -1,5 +1,7 @@
 module Add where
 
+import Data.List (nub)
+
 import Core.FileSystem ( FileSystem(..) )
 
 import Parser (wordParser, getNextDirectory, eofParser)
@@ -7,7 +9,7 @@ import Utility (isPath)
 
 mk :: String -> [FileSystem] -> [FileSystem] -> Maybe [FileSystem]
 mk "" toBeAdded ((MkDirectory name contents) : fs) =
-    Just (MkDirectory name (contents ++ toBeAdded) : fs)
+    Just (MkDirectory name (nub $ contents ++ toBeAdded) : fs)
 mk path toBeAdded ((MkDirectory name contents) : fs) =
     case getNextDirectory path of
         Just (rest, curr) ->
