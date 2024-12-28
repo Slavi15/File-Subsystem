@@ -11,30 +11,33 @@ import Remove (rmFiles)
 import Parser (parseCommand, wordParser)
 import Show (showFile)
 
-eval :: String -> [FileSystem] -> Eval
+eval :: String -> [FileSystem] -> IO Eval
 eval input fs =
     case parseCommand input of
-        Nothing -> Continue $ Just fs
+        Nothing -> pure $ Continue $ Just fs
         Just (rest, curr) ->
             case curr of
-                PWDCommand -> PWD
-                CDCommand -> Continue $ cd ("/" ++ rest) fs
-                LSCommand -> LS ("/" ++ rest)
-                CATCommand -> Continue $ cat rest fs
-                DIRCommand Touch -> Continue $ mkFile rest fs
-                DIRCommand MkDir -> Continue $ mkDirectory rest fs
-                RMCommand -> Continue $ rmFiles rest fs
-                SHOWCommand -> SHOW rest
-                QUITCommand -> QUIT
+                PWDCommand -> pure PWD
+                CDCommand -> pure $ Continue $ cd ("/" ++ rest) fs
+                LSCommand -> pure $ LS ("/" ++ rest)
+                CATCommand -> do
+                    result <- cat rest fs
+                    pure $ Continue result
+                DIRCommand Touch -> pure $ Continue $ mkFile rest fs
+                DIRCommand MkDir -> pure $ Continue $ mkDirectory rest fs
+                RMCommand -> pure $ Continue $ rmFiles rest fs
+                SHOWCommand -> pure $ SHOW rest
+                QUITCommand -> pure QUIT
 
 repl :: [FileSystem] -> IO ()
 repl fs = do
     putStr $ pwd fs ++ "> "
     input <- getLine
-    case eval input fs of
+    result <- eval input fs
+    case result of
         Continue Nothing -> repl fs
         Continue (Just fs') -> repl fs'
-        PWD -> do
+        PWD-> do
                 putStrLn $ pwd fs ++ "\n"
                 repl fs
         LS path -> do
