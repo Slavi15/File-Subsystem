@@ -48,8 +48,8 @@ mkDirectory input fs = case wordParser input of
 updateContent :: String -> String -> [FileSystem] -> [FileSystem] -> Maybe [FileSystem]
 updateContent targetPath restPath toBeAdded (entry@(MkDirectory name contents) : fs)
     | name == targetPath =
-        case mk restPath toBeAdded (entry : fs) of
-            (Just updatedDirectory) -> Just (updatedDirectory ++ fs)
+        case mk restPath toBeAdded contents of
+            (Just updatedContents) -> Just (MkDirectory name updatedContents : fs)
             Nothing -> Nothing
     | otherwise =
         case updateContent targetPath restPath toBeAdded fs of

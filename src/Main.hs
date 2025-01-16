@@ -1,3 +1,4 @@
+{-# LANGUAGE LambdaCase #-}
 module Main where
 
 import Core.FileSystem ( FileSystem(..) )
@@ -20,9 +21,7 @@ eval input fs =
                 PWDCommand -> pure PWD
                 CDCommand -> pure $ Continue $ cd ("/" ++ rest) fs
                 LSCommand -> pure $ LS ("/" ++ rest)
-                CATCommand -> do
-                    result <- cat rest fs
-                    pure $ Continue result
+                CATCommand -> cat rest fs >>= \result -> pure $ Continue result
                 DIRCommand Touch -> pure $ Continue $ mkFile rest fs
                 DIRCommand MkDir -> pure $ Continue $ mkDirectory rest fs
                 RMCommand -> pure $ Continue $ rmFiles rest fs
@@ -33,19 +32,18 @@ repl :: [FileSystem] -> IO ()
 repl fs = do
     putStr $ pwd fs ++ "> "
     input <- getLine
-    result <- eval input fs
-    case result of
+    eval input fs >>= \case
         Continue Nothing -> repl fs
         Continue (Just fs') -> repl fs'
         PWD-> do
-                putStrLn $ pwd fs ++ "\n"
-                repl fs
+            putStrLn $ pwd fs ++ "\n"
+            repl fs
         LS path -> do
-                putStrLn $ ls path fs
-                repl fs
+            putStrLn $ ls path fs
+            repl fs
         SHOW fileName -> do
-                putStrLn $ showFile fileName fs
-                repl fs
+            putStrLn $ showFile fileName fs
+            repl fs
         QUIT -> putStrLn "Exit ..."
 
 main :: IO ()

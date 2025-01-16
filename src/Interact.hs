@@ -1,10 +1,8 @@
 module Interact where
 
 readFileContent :: IO String
-readFileContent = do
-    line <- getLine
+readFileContent = 
+    getLine >>= \line ->
     if line == "."
         then pure ""
-        else do
-            rest <- readFileContent
-            pure (line ++ "\n" ++ rest)
+        else readFileContent >>= \rest -> pure $ line ++ "\n" ++ rest
