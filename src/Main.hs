@@ -19,8 +19,8 @@ eval input fs =
         Just (rest, curr) ->
             case curr of
                 PWDCommand -> pure PWD
-                CDCommand -> pure $ Continue $ cd ("/" ++ rest) fs
-                LSCommand -> pure $ LS ("/" ++ rest)
+                CDCommand -> pure $ Continue $ cd rest fs
+                LSCommand -> pure $ LS rest
                 CATCommand -> cat rest fs >>= \result -> pure $ Continue result
                 DIRCommand Touch -> pure $ Continue $ mkFile rest fs
                 DIRCommand MkDir -> pure $ Continue $ mkDirectory rest fs

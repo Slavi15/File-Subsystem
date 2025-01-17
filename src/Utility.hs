@@ -5,6 +5,9 @@ import Core.FileSystem ( FileSystem(..) )
 isPath :: String -> Bool
 isPath = foldr (\ x -> (||) (x == '/')) False
 
+isAbsolutePath :: String -> Bool
+isAbsolutePath input = isPath input && head input == '/'
+
 isFile :: FileSystem -> Bool
 isFile (MkFile _ _) = True
 isFile _ = False
