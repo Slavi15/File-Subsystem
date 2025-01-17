@@ -1,4 +1,4 @@
-<h1 align="center">File Subsystem</h1>
+<h1 align="center">File System</h1>
 
 ## Overview
 
@@ -45,22 +45,22 @@ data Eval = Continue (Maybe [FileSystem])
     | QUIT
 ```
 
-Due to the provided implementation, I had to define `Eval` in order to obtain information whether or not the command is of I/O type or just File Subsystem manipulation
+Due to the provided implementation, I had to define `Eval` in order to obtain information whether or not the command is of I/O type or just `FileSystem` manipulation
 
 ## Project Structure
 
 1. The provided `Parser.hs` logic plays a pivotal role in the way input is being processed throughout the whole project. Due to the complex logic, the code was partially borrowed from the repository linked down below
    - https://github.com/tsoding/haskell-json
    - https://github.com/fmi-fp-lab/fp-lab-2024-25/tree/master/exercises/09
-2. The logic, concerned with adding and removing FileSystem instances is located in the provided `Add.hs` and `Remove.hs` files, where the logic for file manipulation is segregated from the logic, concerned with directory manipulation
+2. The logic, concerned with `FileSystem` manipulation is segregated into distinct code files i.e `Add.hs`, `Remove.hs`, `Navigation.hs`, `Concat.hs`
 
 ## Installation
 
 1. Clone this repository
 
 ```console
-git clone https://github.com/Slavi15/File-Subsystem.git
-# SSH: git clone git@github.com:Slavi15/File-Subsystem.git
+git clone https://github.com/Slavi15/File-System.git
+# SSH: git clone git@github.com:Slavi15/File-System.git
 ```
 
 2. Head to `src` directory
@@ -107,7 +107,7 @@ fileSystem = MkDirectory "/" []
 Microsoft Windows [Version 10.0.22631.4602]
 (c) Microsoft Corporation. All rights reserved.
 
-D:\File-Subsystem\src>ghci
+D:\File-System\src>ghci
 GHCi, version 9.4.8: https://www.haskell.org/ghc/  :? for help
 ghci> :load Main.hs
 [ 1 of 13] Compiling Core.Command     ( Core\Command.hs, interpreted )
@@ -191,5 +191,5 @@ Exit ...
 ghci> :q
 Leaving GHCi.
 
-D:\File-Subsystem\src>
+D:\File-System\src>
 ```
