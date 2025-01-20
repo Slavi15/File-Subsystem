@@ -54,7 +54,7 @@ updateContent targetPath restPath toBeAdded (entry@(MkDirectory name contents) :
             (Just updatedContents) -> Just updatedContents
             Nothing -> Nothing
     | otherwise =
-        case updateContent targetPath restPath toBeAdded contents of
+        case updateContent targetPath restPath toBeAdded fs of
             (Just remaining) -> Just (entry : remaining)
             Nothing -> Nothing
 updateContent _ _ _ [] = Nothing

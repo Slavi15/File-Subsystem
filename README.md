@@ -104,25 +104,26 @@ fileSystem = MkDirectory "/" []
 ## Usage
 
 ```console
-Microsoft Windows [Version 10.0.22631.4602]
+Microsoft Windows [Version 10.0.22631.4751]
 (c) Microsoft Corporation. All rights reserved.
 
 D:\File-System\src>ghci
 GHCi, version 9.4.8: https://www.haskell.org/ghc/  :? for help
 ghci> :load Main.hs
-[ 1 of 13] Compiling Core.Command     ( Core\Command.hs, interpreted )
-[ 2 of 13] Compiling Core.FileSystem  ( Core\FileSystem.hs, interpreted )
-[ 3 of 13] Compiling Core.Eval        ( Core\Eval.hs, interpreted )
-[ 4 of 13] Compiling Output           ( Output.hs, interpreted )
-[ 5 of 13] Compiling Parser           ( Parser.hs, interpreted )
-[ 6 of 13] Compiling Navigation       ( Navigation.hs, interpreted )
-[ 7 of 13] Compiling Utility          ( Utility.hs, interpreted )
-[ 8 of 13] Compiling Show             ( Show.hs, interpreted )
-[ 9 of 13] Compiling Remove           ( Remove.hs, interpreted )
-[10 of 13] Compiling Add              ( Add.hs, interpreted )
-[11 of 13] Compiling Cat              ( Cat.hs, interpreted )
-[12 of 13] Compiling Main             ( Main.hs, interpreted )
-Ok, 12 modules loaded.
+[ 1 of 14] Compiling Core.Command     ( Core\Command.hs, interpreted )
+[ 2 of 14] Compiling Core.FileSystem  ( Core\FileSystem.hs, interpreted )
+[ 3 of 14] Compiling Core.Eval        ( Core\Eval.hs, interpreted )
+[ 4 of 14] Compiling Interact         ( Interact.hs, interpreted )
+[ 5 of 14] Compiling Output           ( Output.hs, interpreted )
+[ 6 of 14] Compiling Parser           ( Parser.hs, interpreted )
+[ 7 of 14] Compiling Utility          ( Utility.hs, interpreted )
+[ 8 of 14] Compiling Show             ( Show.hs, interpreted )
+[ 9 of 14] Compiling Remove           ( Remove.hs, interpreted )
+[10 of 14] Compiling Navigation       ( Navigation.hs, interpreted )
+[11 of 14] Compiling Add              ( Add.hs, interpreted )
+[12 of 14] Compiling Concat           ( Concat.hs, interpreted )
+[13 of 14] Compiling Main             ( Main.hs, interpreted )
+Ok, 13 modules loaded.
 ghci> main
 /> ls
 
